@@ -31,6 +31,105 @@
             margin: 10px 0;
         }
         @media (max-width: 600px) {
+            #countdown { font-size: 12vw; } /* Reduced from 15vw */
+            .deadline-text { font-size: 4vw; } /* Reduced from 5vw */
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown-container">
+        <div id="countdown">Loading...</div>
+        <div class="deadline-text" id="et-time"></div>
+        <div class="deadline-text" id="local-time"></div>
+    </div>
+
+    <script>
+        // Set the target deadline here
+        // EDT is used because April is during Daylight Saving Time
+        const targetDate = new Date("April 7, 2026 20:00:00 EDT");
+
+        const countdownElement = document.getElementById("countdown");
+        const etTimeElement = document.getElementById("et-time");
+        const localTimeElement = document.getElementById("local-time");
+
+        // Display the deadline in Eastern Time
+        const etFormatter = new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/New_York",
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            timeZoneName: "short"
+        });
+        etTimeElement.innerText = "Deadline (ET): " + etFormatter.format(targetDate);
+
+        // Display the deadline in the user's Local Time
+        const localFormatter = new Intl.DateTimeFormat("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            timeZoneName: "short"
+        });
+        localTimeElement.innerText = "Deadline (Local): " + localFormatter.format(targetDate);
+
+        function updateCountdown() {
+            const now = new Date();
+            const timeLeft = targetDate - now;
+
+            if (timeLeft <= 0) {
+                countdownElement.innerText = "Time is up!";
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            countdownElement.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Run immediately and then update every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadline Countdown</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #111111;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        .countdown-container {
+            text-align: center;
+        }
+        #countdown {
+            font-size: 9vw; /* Big font size responsive to screen width */
+            font-weight: bold;
+            color: #ff0000; /* Red color */
+            margin-bottom: 20px;
+        }
+        .deadline-text {
+            font-size: 1.5vw;
+            color: #ffff00; /* Yellow color */
+            margin: 10px 0;
+        }
+        @media (max-width: 600px) {
             #countdown { font-size: 15vw; }
             .deadline-text { font-size: 5vw; }
         }

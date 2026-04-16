@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clear State Transition Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#e3f2fd',
+                primaryBorderColor: '#1565c0',
+                lineColor: '#333333',
+                textColor: '#000000',
+                fontSize: '18px'
+            },
+            flowchart: {
+                curve: 'basis',
+                nodeSpacing: 100,
+                rankSpacing: 150
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .slide-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1600px;
+            width: 100%;
+        }
+        .panel {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            text-align: center;
+            border-top: 5px solid #1565c0;
+        }
+        h2 {
+            color: #333333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-container">
+    
+    <div class="panel">
+        <h2>Starting from S_Normal</h2>
+        <pre class="mermaid">
+        graph LR
+            N(((S_Normal))) -->|HR HIGH, BP OK <br> Alarm HR| H((S_HR_High))
+            N -->|HR OK, BP HIGH <br> Alarm BP| B((S_BP_High))
+            N -->|HR HIGH, BP HIGH <br> Alarm BOTH| C((S_Critical))
+            N -->|HR OK, BP OK <br> Alarm OFF| N
+        </pre>
+    </div>
+
+    <div class="panel">
+        <h2>Starting from S_HR_High</h2>
+        <pre class="mermaid">
+        graph LR
+            H(((S_HR_High))) -->|HR OK, BP OK <br> Alarm OFF| N((S_Normal))
+            H -->|HR OK, BP HIGH <br> Alarm BP| B((S_BP_High))
+            H -->|HR HIGH, BP HIGH <br> Alarm BOTH| C((S_Critical))
+            H -->|HR HIGH, BP OK <br> Alarm HR| H
+        </pre>
+    </div>
+
+    <div class="panel">
+        <h2>Starting from S_BP_High</h2>
+        <pre class="mermaid">
+        graph LR
+            B(((S_BP_High))) -->|HR OK, BP OK <br> Alarm OFF| N((S_Normal))
+            B -->|HR HIGH, BP OK <br> Alarm HR| H((S_HR_High))
+            B -->|HR HIGH, BP HIGH <br> Alarm BOTH| C((S_Critical))
+            B -->|HR OK, BP HIGH <br> Alarm BP| B
+        </pre>
+    </div>
+
+    <div class="panel">
+        <h2>Starting from S_Critical</h2>
+        <pre class="mermaid">
+        graph LR
+            C(((S_Critical))) -->|HR OK, BP OK <br> Alarm OFF| N((S_Normal))
+            C -->|HR HIGH, BP OK <br> Alarm HR| H((S_HR_High))
+            C -->|HR OK, BP HIGH <br> Alarm BP| B((S_BP_High))
+            C -->|HR HIGH, BP HIGH <br> Alarm BOTH| C
+        </pre>
+    </div>
+
+</div>
+
+</body>
+</html>

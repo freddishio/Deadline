@@ -2,24 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>State Transition Diagram</title>
+    <title>Clean State Transition Diagram</title>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true });
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                curve: 'basis',
+                nodeSpacing: 150,
+                rankSpacing: 150
+            }
+        });
     </script>
     <style>
         body {
             font-family: sans-serif;
             display: flex;
             justify-content: center;
-            padding: 20px;
-            background-color: #f4f4f9;
+            padding: 40px;
+            background-color: #ffffff;
         }
         .diagram-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid #eeeeee;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            background: #fdfdfd;
         }
     </style>
 </head>
@@ -27,32 +36,31 @@
 
 <div class="diagram-container">
     <pre class="mermaid">
-    stateDiagram-v2
-        direction TB
+    graph TD
+        N((S_Normal))
+        H((S_HR_High))
+        B((S_BP_High))
+        C((S_Critical))
 
-        %% S_Normal Transitions
-        S_Normal --> S_Normal : HR_OK, BP_OK / Alarm_OFF
-        S_Normal --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
-        S_Normal --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
-        S_Normal --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
+        N -->|HR_HIGH, BP_OK / Alarm_HR| H
+        N -->|HR_OK, BP_HIGH / Alarm_BP| B
+        N -->|HR_HIGH, BP_HIGH / Alarm_BOTH| C
+        N -->|HR_OK, BP_OK / Alarm_OFF| N
 
-        %% S_HR_High Transitions
-        S_HR_High --> S_Normal : HR_OK, BP_OK / Alarm_OFF
-        S_HR_High --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
-        S_HR_High --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
-        S_HR_High --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
+        H -->|HR_OK, BP_OK / Alarm_OFF| N
+        H -->|HR_OK, BP_HIGH / Alarm_BP| B
+        H -->|HR_HIGH, BP_HIGH / Alarm_BOTH| C
+        H -->|HR_HIGH, BP_OK / Alarm_HR| H
 
-        %% S_BP_High Transitions
-        S_BP_High --> S_Normal : HR_OK, BP_OK / Alarm_OFF
-        S_BP_High --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
-        S_BP_High --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
-        S_BP_High --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
+        B -->|HR_OK, BP_OK / Alarm_OFF| N
+        B -->|HR_HIGH, BP_OK / Alarm_HR| H
+        B -->|HR_HIGH, BP_HIGH / Alarm_BOTH| C
+        B -->|HR_OK, BP_HIGH / Alarm_BP| B
 
-        %% S_Critical Transitions
-        S_Critical --> S_Normal : HR_OK, BP_OK / Alarm_OFF
-        S_Critical --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
-        S_Critical --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
-        S_Critical --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
+        C -->|HR_OK, BP_OK / Alarm_OFF| N
+        C -->|HR_HIGH, BP_OK / Alarm_HR| H
+        C -->|HR_OK, BP_HIGH / Alarm_BP| B
+        C -->|HR_HIGH, BP_HIGH / Alarm_BOTH| C
     </pre>
 </div>
 

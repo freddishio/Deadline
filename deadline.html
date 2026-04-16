@@ -2,99 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deadline Countdown</title>
+    <title>State Transition Diagram</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
     <style>
         body {
+            font-family: sans-serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #111111;
-            color: #ff0000;
-            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
         }
-        .countdown-container {
-            text-align: center;
-        }
-        #countdown {
-            font-size: 9vw; /* Big font size responsive to screen width */
-            font-weight: bold;
-            color: #ff0000; /* Red color */
-            margin-bottom: 20px;
-        }
-        .deadline-text {
-            font-size: 1.5vw;
-            color: #ffff00; /* Yellow color */
-            margin: 10px 0;
-        }
-        @media (max-width: 600px) {
-            #countdown { font-size: 12vw; } 
-            .deadline-text { font-size: 4vw; } 
+        .diagram-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
-    <div class="countdown-container">
-        <div id="countdown"></div>
-        <div class="deadline-text" id="et-time"></div>
-        <div class="deadline-text" id="local-time"></div>
-    </div>
 
-    <script>
-        // Set the target deadline here
-        // EDT is used because April is during Daylight Saving Time
-        const targetDate = new Date("April 7, 2026 20:00:00 EDT");
+<div class="diagram-container">
+    <pre class="mermaid">
+    stateDiagram-v2
+        direction TB
 
-        const countdownElement = document.getElementById("countdown");
-        const etTimeElement = document.getElementById("et-time");
-        const localTimeElement = document.getElementById("local-time");
+        %% S_Normal Transitions
+        S_Normal --> S_Normal : HR_OK, BP_OK / Alarm_OFF
+        S_Normal --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
+        S_Normal --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
+        S_Normal --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
 
-        // Display the deadline in Eastern Time
-        const etFormatter = new Intl.DateTimeFormat("en-US", {
-            timeZone: "America/New_York",
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-            timeZoneName: "short"
-        });
-        etTimeElement.innerText = "Deadline (ET): " + etFormatter.format(targetDate);
+        %% S_HR_High Transitions
+        S_HR_High --> S_Normal : HR_OK, BP_OK / Alarm_OFF
+        S_HR_High --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
+        S_HR_High --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
+        S_HR_High --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
 
-        // Display the deadline in the user's Local Time
-        const localFormatter = new Intl.DateTimeFormat("en-US", {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "2-digit",
-            timeZoneName: "short"
-        });
-        localTimeElement.innerText = "Deadline (Local): " + localFormatter.format(targetDate);
+        %% S_BP_High Transitions
+        S_BP_High --> S_Normal : HR_OK, BP_OK / Alarm_OFF
+        S_BP_High --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
+        S_BP_High --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
+        S_BP_High --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
 
-        function updateCountdown() {
-            const now = new Date();
-            const timeLeft = targetDate - now;
+        %% S_Critical Transitions
+        S_Critical --> S_Normal : HR_OK, BP_OK / Alarm_OFF
+        S_Critical --> S_HR_High : HR_HIGH, BP_OK / Alarm_HR
+        S_Critical --> S_BP_High : HR_OK, BP_HIGH / Alarm_BP
+        S_Critical --> S_Critical : HR_HIGH, BP_HIGH / Alarm_BOTH
+    </pre>
+</div>
 
-            if (timeLeft <= 0) {
-                countdownElement.innerText = "Time is up!";
-                return;
-            }
-
-            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-            countdownElement.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        // Run immediately and then update every second
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-    </script>
 </body>
 </html>

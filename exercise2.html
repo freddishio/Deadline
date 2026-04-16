@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alarm FSM Diagram</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --ink: #183153;
+      --line: #294f7a;
+      --accent: #5b7db1;
+      --muted: #5f6f82;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 24px;
+    }
+
+    .wrap {
+      max-width: 1220px;
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid #d9e1ea;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 20px 24px 10px;
+      border-bottom: 1px solid #e8edf3;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .diagram-area {
+      padding: 18px;
+      overflow-x: auto;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      min-width: 1100px;
+      display: block;
+      background: #fff;
+      border-radius: 12px;
+    }
+
+    .state circle {
+      fill: #ffffff;
+      stroke: var(--line);
+      stroke-width: 3;
+    }
+
+    .state text {
+      fill: var(--ink);
+      font-weight: 700;
+      font-size: 22px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .start-dot {
+      fill: var(--line);
+    }
+
+    .edge {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 2.8;
+      marker-end: url(#arrow);
+    }
+
+    .edge.soft {
+      stroke: var(--accent);
+    }
+
+    .label {
+      font-size: 17px;
+      font-weight: 700;
+      fill: var(--ink);
+      text-anchor: middle;
+      paint-order: stroke;
+      stroke: #ffffff;
+      stroke-width: 7px;
+      stroke-linejoin: round;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 14px 28px;
+      padding: 0 24px 24px;
+      color: var(--ink);
+    }
+
+    .legend h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .legend-box {
+      background: #fbfcfe;
+      border: 1px solid #e5ebf2;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .legend ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.7;
+    }
+
+    .footer-note {
+      padding: 0 24px 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>Mealy FSM for Patient Monitor Alarms</h1>
+      <p class="subtitle">
+        Combined 4-state model for heart-rate and blood-pressure alarms.
+        Inputs are abbreviated in the legend below.
+      </p>
+    </div>
+
+    <div class="diagram-area">
+      <svg viewBox="0 0 1120 780" aria-label="FSM diagram for patient monitor alarms">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#294f7a"></path>
+          </marker>
+        </defs>
+
+        <!-- start arrow -->
+        <circle class="start-dot" cx="390" cy="130" r="9"></circle>
+        <path class="edge" d="M 399 130 L 466 130"></path>
+
+        <!-- states -->
+        <g class="state">
+          <circle cx="540" cy="130" r="74"></circle>
+          <text x="540" y="118">No</text>
+          <text x="540" y="146">Alarm</text>
+        </g>
+
+        <g class="state">
+          <circle cx="860" cy="340" r="74"></circle>
+          <text x="860" y="328">HR</text>
+          <text x="860" y="356">Alarm</text>
+        </g>
+
+        <g class="state">
+          <circle cx="540" cy="550" r="74"></circle>
+          <text x="540" y="536">HR+BP</text>
+          <text x="540" y="564">Alarm</text>
+        </g>
+
+        <g class="state">
+          <circle cx="220" cy="340" r="74"></circle>
+          <text x="220" y="328">BP</text>
+          <text x="220" y="356">Alarm</text>
+        </g>
+
+        <!-- self-loops -->
+        <path class="edge soft" d="M 490 92 C 458 14, 622 14, 590 92"></path>
+        <text class="label" x="540" y="18">!h &amp;&amp; !b / -</text>
+
+        <path class="edge soft" d="M 922 286 C 1018 260, 1018 420, 922 394"></path>
+        <text class="label" x="1035" y="340">h &amp;&amp; !b / -</text>
+
+        <path class="edge soft" d="M 590 588 C 622 666, 458 666, 490 588"></path>
+        <text class="label" x="540" y="714">h &amp;&amp; b / -</text>
+
+        <path class="edge soft" d="M 158 286 C 62 260, 62 420, 158 394"></path>
+        <text class="label" x="58" y="340">!h &amp;&amp; b / -</text>
+
+        <!-- direct state-changing transitions -->
+        <path class="edge" d="M 600 170 L 800 300"></path>
+        <text class="label" x="700" y="205">h &amp;&amp; !b / HR+</text>
+
+        <path class="edge" d="M 480 170 L 280 300"></path>
+        <text class="label" x="380" y="205">!h &amp;&amp; b / BP+</text>
+
+        <path class="edge" d="M 800 380 L 600 510"></path>
+        <text class="label" x="735" y="470">h &amp;&amp; b / BP+</text>
+
+        <path class="edge" d="M 280 380 L 480 510"></path>
+        <text class="label" x="345" y="470">h &amp;&amp; b / HR+</text>
+
+        <path class="edge" d="M 515 204 L 515 476"></path>
+        <text class="label" x="385" y="342">h &amp;&amp; b / HR+, BP+</text>
+
+        <path class="edge" d="M 292 320 L 788 320"></path>
+        <text class="label" x="540" y="296">h &amp;&amp; !b / HR+, BP-</text>
+
+        <!-- reverse / alternate transitions -->
+        <path class="edge soft" d="M 796 288 C 724 176, 653 116, 606 116"></path>
+        <text class="label" x="710" y="86">!h &amp;&amp; !b / HR-</text>
+
+        <path class="edge soft" d="M 274 288 C 346 176, 417 116, 474 116"></path>
+        <text class="label" x="360" y="86">!h &amp;&amp; !b / BP-</text>
+
+        <path class="edge soft" d="M 606 524 C 718 610, 954 486, 908 386"></path>
+        <text class="label" x="910" y="490">h &amp;&amp; !b / BP-</text>
+
+        <path class="edge soft" d="M 474 524 C 362 610, 126 486, 172 386"></path>
+        <text class="label" x="170" y="490">!h &amp;&amp; b / HR-</text>
+
+        <path class="edge soft" d="M 565 476 L 565 204"></path>
+        <text class="label" x="700" y="342">!h &amp;&amp; !b / HR-, BP-</text>
+
+        <path class="edge soft" d="M 788 360 L 292 360"></path>
+        <text class="label" x="540" y="394">!h &amp;&amp; b / HR-, BP+</text>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <div class="legend-box">
+        <h2>Input legend</h2>
+        <ul>
+          <li><strong>h</strong> = heart rate above its limit</li>
+          <li><strong>b</strong> = blood pressure above its limit</li>
+        </ul>
+      </div>
+
+      <div class="legend-box">
+        <h2>Output legend</h2>
+        <ul>
+          <li><strong>HR+</strong> = switch heart-rate alarm on</li>
+          <li><strong>HR-</strong> = switch heart-rate alarm off</li>
+          <li><strong>BP+</strong> = switch blood-pressure alarm on</li>
+          <li><strong>BP-</strong> = switch blood-pressure alarm off</li>
+          <li><strong>-</strong> = no output action</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      The four states encode which alarms are currently active. This is a Mealy machine,
+      so each transition label is written as input condition / output action.
+    </div>
+  </div>
+</body>
+</html>

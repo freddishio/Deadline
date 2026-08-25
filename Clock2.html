@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monochrome Telemetry Clock</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #dashboard-wrapper {
+            width: 90vw;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 32px;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            background: rgba(8, 8, 8, 0.95);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            will-change: transform;
+            transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: #555555;
+            border-bottom: 1px solid #161616;
+            padding-bottom: 12px;
+        }
+
+        .meta-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .meta-value {
+            color: #aaaaaa;
+            font-weight: 600;
+        }
+
+        .main-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        .time-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            font-weight: 800;
+            line-height: 0.9;
+        }
+
+        .time-digits {
+            font-size: clamp(3.5rem, 13vw, 7.5rem);
+            letter-spacing: -0.04em;
+            color: #ffffff;
+        }
+
+        .seconds-digit {
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            color: #666666;
+            margin-left: 12px;
+            font-weight: 400;
+        }
+
+        .date-string {
+            margin-top: 14px;
+            font-size: clamp(0.85rem, 2.2vw, 1.25rem);
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #888888;
+            font-weight: 500;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            border-top: 1px solid #161616;
+            border-bottom: 1px solid #161616;
+            padding: 16px 0;
+        }
+
+        .metric-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #555555;
+        }
+
+        .metric-header span:last-child {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 4px;
+            background: #141414;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ffffff;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            color: #444444;
+            text-transform: uppercase;
+        }
+
+        .telemetry-item span {
+            color: #777777;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="dashboard-wrapper">
+        <div class="meta-row">
+            <div class="meta-group">
+                <span>WEEK <span id="val-week" class="meta-value">--</span></span>
+                <span>DOY <span id="val-doy" class="meta-value">---</span></span>
+            </div>
+            <div class="meta-group">
+                <span>QUARTER <span id="val-quarter" class="meta-value">-</span></span>
+                <span id="val-tz" class="meta-value">UTC</span>
+            </div>
+        </div>
+
+        <div class="main-display">
+            <div class="time-row">
+                <span id="val-hours-mins" class="time-digits">00:00</span>
+                <span id="val-secs" class="seconds-digit">:00</span>
+            </div>
+            <div id="val-date" class="date-string">LOADING DATE DATA</div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>Day Elapsed</span>
+                    <span id="val-day-pct">0.0%</span>
+                </div>
+                <div class="progress-track">
+                    <div id="bar-day" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span>Year Elapsed</span>
+                    <span id="val-year-pct">0.0%</span>
+                </div>
+                <div class="progress-track">
+                    <div id="bar-year" class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="telemetry-row">
+            <div class="telemetry-item">EPOCH: <span id="val-epoch">0000000000</span></div>
+            <div class="telemetry-item">STATUS: <span id="val-status">ACTIVE</span></div>
+            <div class="telemetry-item">DRIFT SHIFT: <span id="val-shift">READY</span></div>
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+
+        const wrapper = document.getElementById("dashboard-wrapper");
+        const hoursMinsElem = document.getElementById("val-hours-mins");
+        const secsElem = document.getElementById("val-secs");
+        const dateElem = document.getElementById("val-date");
+        const weekElem = document.getElementById("val-week");
+        const doyElem = document.getElementById("val-doy");
+        const quarterElem = document.getElementById("val-quarter");
+        const tzElem = document.getElementById("val-tz");
+        const dayPctElem = document.getElementById("val-day-pct");
+        const yearPctElem = document.getElementById("val-year-pct");
+        const barDay = document.getElementById("bar-day");
+        const barYear = document.getElementById("bar-year");
+        const epochElem = document.getElementById("val-epoch");
+        const shiftElem = document.getElementById("val-shift");
+
+        let lastMinute = -1;
+
+        function getWeekNumber(d) {
+            const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            const dayNum = date.getUTCDay() || 7;
+            date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+            return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+        }
+
+        function getDayOfYear(d) {
+            const start = new Date(d.getFullYear(), 0, 0);
+            const diff = (d - start) + ((start.getTimezoneOffset() - d.getTimezoneOffset()) * 60 * 1000);
+            return Math.floor(diff / (1000 * 60 * 60 * 24));
+        }
+
+        function updatePosition() {
+            const cardHeight = wrapper.offsetHeight;
+            const viewportHeight = window.innerHeight;
+            
+            /* Enforce strict 5% top and bottom safety boundaries */
+            const maxOffset = Math.max(0, 0.45 * viewportHeight - cardHeight / 2);
+            const randomOffset = (Math.random() * 2 - 1) * maxOffset;
+            
+            wrapper.style.transform = `translateY(${randomOffset.toFixed(1)}px)`;
+            shiftElem.textContent = `${randomOffset >= 0 ? "+" : ""}${Math.round(randomOffset)}PX`;
+        }
+
+        function updateTelemetry() {
+            const now = new Date();
+            const minutes = now.getMinutes();
+
+            /* Trigger burn-in position shift at the turn of every minute */
+            if (minutes !== lastMinute) {
+                lastMinute = minutes;
+                updatePosition();
+            }
+
+            /* Time calculations */
+            const hrs = String(now.getHours()).padStart(2, "0");
+            const mins = String(now.getMinutes()).padStart(2, "0");
+            const secs = String(now.getSeconds()).padStart(2, "0");
+
+            hoursMinsElem.textContent = `${hrs}:${mins}`;
+            secsElem.textContent = `:${secs}`;
+
+            /* Date formatting */
+            const options = { weekday: "long", month: "long", day: "numeric", year: "numeric" };
+            dateElem.textContent = now.toLocaleDateString("en-US", options);
+
+            /* Astronomical and calendar telemetry */
+            const doy = getDayOfYear(now);
+            const isLeap = (now.getFullYear() % 4 === 0 && now.getFullYear() % 100 !== 0) || (now.getFullYear() % 400 === 0);
+            const totalDaysInYear = isLeap ? 366 : 365;
+
+            weekElem.textContent = String(getWeekNumber(now)).padStart(2, "0");
+            doyElem.textContent = `${String(doy).padStart(3, "0")}/${totalDaysInYear}`;
+            quarterElem.textContent = `Q${Math.floor(now.getMonth() / 3) + 1}`;
+            
+            /* Timezone resolution */
+            const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            tzElem.textContent = tzName.split("/").pop().replace(/_/g, " ").toUpperCase();
+
+            /* Day progress calculation */
+            const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const msSinceMidnight = now.getTime() - midnight;
+            const dayProgress = (msSinceMidnight / 86400000) * 100;
+            dayPctElem.textContent = `${dayProgress.toFixed(1)}%`;
+            barDay.style.width = `${dayProgress}%`;
+
+            /* Year progress calculation */
+            const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
+            const endOfYear = new Date(now.getFullYear() + 1, 0, 1).getTime();
+            const yearProgress = ((now.getTime() - startOfYear) / (endOfYear - startOfYear)) * 100;
+            yearPctElem.textContent = `${yearProgress.toFixed(2)}%`;
+            barYear.style.width = `${yearProgress}%`;
+
+            /* Epoch timestamp */
+            epochElem.textContent = Math.floor(now.getTime() / 1000);
+
+            requestAnimationFrame(updateTelemetry);
+        }
+
+        window.addEventListener("resize", updatePosition);
+
+        updatePosition();
+        updateTelemetry();
+    </script>
+</body>
+</html>

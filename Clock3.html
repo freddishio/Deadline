@@ -25,16 +25,16 @@
         }
 
         #burn_wrapper {
-            width: 95vw;
-            max-width: 1500px;
+            width: 90vw;
+            max-width: 1350px;
             will-change: transform;
             transition: transform 4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         #orbit_layer {
             display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 60px;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 50px;
             padding: 40px;
             transition: transform 1.5s ease;
         }
@@ -71,8 +71,8 @@
 
         .time_row {
             display: flex;
-            align-items: baseline;
-            gap: 12px;
+            align-items: center;
+            gap: 8px;
         }
 
         .clock_time {
@@ -80,20 +80,27 @@
             font-weight: 700;
             letter-spacing: -0.04em;
             color: #FFFFFF;
+            font-variant-numeric: tabular-nums;
         }
 
         .clock_sec {
-            font-size: clamp(2rem, 4vw, 5rem);
-            font-weight: 300;
-            color: #666666;
-            letter-spacing: -0.02em;
+            font-size: clamp(1.2rem, 2vw, 2.2rem);
+            font-weight: 600;
+            color: #AAAAAA;
+            border: 1px solid #333333;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-variant-numeric: tabular-nums;
+            min-width: 70px;
+            text-align: center;
+            margin-left: 8px;
         }
 
         .clock_date {
             font-size: clamp(0.9rem, 1.8vw, 1.3rem);
             letter-spacing: 0.1em;
             color: #888888;
-            margin-top: 20px;
+            margin-top: 24px;
             font-weight: 300;
             text-transform: uppercase;
         }
@@ -223,7 +230,7 @@
 
         .current_weather {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             margin-bottom: 32px;
         }
 
@@ -232,7 +239,6 @@
             height: 90px;
             fill: #FFFFFF;
             margin-right: 24px;
-            margin-bottom: -6px;
         }
 
         .current_temp {
@@ -247,7 +253,6 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            padding-bottom: 6px;
             align-items: flex-start;
         }
 
@@ -283,8 +288,7 @@
 
         .hourly_row {
             display: flex;
-            justify-content: center;
-            gap: clamp(10px, 2.5vw, 25px);
+            justify-content: space-between;
             padding: 16px 0;
             border-bottom: 1px solid #222222;
             margin-bottom: 24px;
@@ -475,6 +479,7 @@
                     <div class="current_details">
                         <div id="cur_cond" class="cond_text">CONNECTING</div>
                         <div id="cur_hl" class="cond_stats">HIGH: 0° | LOW: 0°</div>
+                        <div id="cur_sun" class="cond_stats">SUNRISE: --:-- | SUNSET: --:--</div>
                         <div id="cur_rain" class="cond_stats">PRECIPITATION: 0%</div>
                         <div id="active_alert" class="weather_alert"></div>
                     </div>
@@ -555,10 +560,10 @@
 
         const svgIcons = {
             clear: `<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
-            cloudy: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>`,
-            rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/><path d="M11 20h2v4h-2zm-4 0h2v4H7zm8 0h2v4h-2z"/></svg>`,
+            cloudy: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
+            rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
             snow: `<svg viewBox="0 0 24 24"><path d="M22 14c0-2.64-2.05-4.78-4.65-4.96C16.67 5.59 13.64 3 10 3 7.11 3 4.6 4.64 3.35 7.04 1.34 7.36 0 9.91 0 13c0 3.31 2.69 6 6 6h2.53l-1.63-1.63c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.19 3.19c.39.39.39 1.02 0 1.41l-3.19 3.19c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.63-1.63H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 6.69 9.48 5 12 5c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
-            storm: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/><path d="M11 20l-3 4h4l-2 4h6l-3-4h4l-2-4z"/></svg>`
+            storm: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`
         };
 
         function getWMOData(code) {
@@ -648,7 +653,7 @@
             refreshBtn.classList.add("spinning");
 
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=${currentUnit}&timezone=auto&forecast_days=5`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&temperature_unit=${currentUnit}&timezone=auto&forecast_days=5`;
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -657,11 +662,21 @@
                 document.getElementById("cur_temp").textContent = `${Math.round(data.current.temperature_2m)}°`;
                 document.getElementById("cur_cond").textContent = currentData.text;
                 
+                const formatTime = (isoString) => {
+                    if (!isoString) return "--:--";
+                    const d = new Date(isoString);
+                    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toUpperCase();
+                };
+                
                 const todayMax = Math.round(data.daily.temperature_2m_max[0]);
                 const todayMin = Math.round(data.daily.temperature_2m_min[0]);
                 const todayPrecip = data.daily.precipitation_probability_max[0];
+                const sunriseTime = formatTime(data.daily.sunrise[0]);
+                const sunsetTime = formatTime(data.daily.sunset[0]);
+                
                 document.getElementById("cur_hl").textContent = `HIGH: ${todayMax}° | LOW: ${todayMin}°`;
                 document.getElementById("cur_rain").textContent = `PRECIPITATION: ${todayPrecip}%`;
+                document.getElementById("cur_sun").textContent = `SUNRISE: ${sunriseTime} | SUNSET: ${sunsetTime}`;
 
                 const nowMs = Date.now();
                 let nextHourIdx = data.hourly.time.findIndex(timeStr => new Date(timeStr).getTime() > nowMs);

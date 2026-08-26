@@ -17,7 +17,7 @@
             height: 100%;
             background: #000000;
             color: #FFFFFF;
-            font-family: "Helvetica Neue", Arial, sans-serif;
+            font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -548,11 +548,8 @@
                             </div>
                         </div>
                         <svg viewBox="0 0 300 100" width="100%" height="100px">
-                            <!-- Horizon Line -->
                             <line x1="0" y1="60" x2="300" y2="60" stroke="#333333" stroke-width="2"/>
-                            <!-- Mathematical Cosine Wave -->
                             <path id="solar_wave_path" fill="none" stroke="#555555" stroke-width="2" stroke-dasharray="4 6"/>
-                            <!-- Sun Indicator -->
                             <g id="sun_indicator" style="transform: translate(150px, 15px); transition: transform 0.5s ease-out;">
                                 <circle cx="0" cy="0" r="6" fill="#FFFFFF"/>
                                 <circle cx="0" cy="0" r="14" fill="rgba(255, 255, 255, 0.15)"/>
@@ -564,7 +561,6 @@
 
                 <div class="section_title title_no_border">10 Hour Projection</div>
                 <div class="hourly_row" id="hourly_container">
-                    <!-- Javascript will populate the 10 hours here -->
                 </div>
 
                 <div class="section_title title_no_border">Extended Forecast</div>
@@ -643,8 +639,10 @@
 
         const svgIcons = {
             clear: `<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
-            cloudy: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
-            rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
+            cloudy: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2z"/></svg>`,
+            drizzle: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM10 20h1.5v4H10zm3.5 0H15v4h-1.5z"/></svg>`,
+            rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM11 20h2v4h-2zm-4 0h2v4H7zm8 0h2v4h-2z"/></svg>`,
+            heavy_rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM6 20h1.5v4H6zm3.5 0H11v4H9.5zm3.5 0H14.5v4H13zm3.5 0H18v4H16.5z"/></svg>`,
             snow: `<svg viewBox="0 0 24 24"><path d="M22 14c0-2.64-2.05-4.78-4.65-4.96C16.67 5.59 13.64 3 10 3 7.11 3 4.6 4.64 3.35 7.04 1.34 7.36 0 9.91 0 13c0 3.31 2.69 6 6 6h2.53l-1.63-1.63c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.19 3.19c.39.39.39 1.02 0 1.41l-3.19 3.19c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.63-1.63H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 6.69 9.48 5 12 5c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
             storm: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM11 20l-3 4h4l-2 4h6l-3-4h4l-2-4z"/></svg>`
         };
@@ -660,13 +658,37 @@
         }
 
         function getWMOData(code) {
-            if (code <= 1) return { text: "Clear", icon: svgIcons.clear };
-            if (code <= 3) return { text: "Cloudy", icon: svgIcons.cloudy };
-            if (code >= 45 && code <= 48) return { text: "Fog", icon: svgIcons.cloudy };
-            if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return { text: "Rain", icon: svgIcons.rain };
-            if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return { text: "Snow", icon: svgIcons.snow };
-            if (code >= 95) return { text: "Storms", icon: svgIcons.storm };
-            return { text: "Varied", icon: svgIcons.cloudy };
+            switch (code) {
+                case 0: return { text: "Clear Sky", icon: svgIcons.clear };
+                case 1: return { text: "Mainly Clear", icon: svgIcons.clear };
+                case 2: return { text: "Partly Cloudy", icon: svgIcons.cloudy };
+                case 3: return { text: "Overcast", icon: svgIcons.cloudy };
+                case 45: return { text: "Fog", icon: svgIcons.cloudy };
+                case 48: return { text: "Rime Fog", icon: svgIcons.cloudy };
+                case 51: return { text: "Light Drizzle", icon: svgIcons.drizzle };
+                case 53: return { text: "Moderate Drizzle", icon: svgIcons.drizzle };
+                case 55: return { text: "Dense Drizzle", icon: svgIcons.drizzle };
+                case 56: return { text: "Light Freezing Drizzle", icon: svgIcons.drizzle };
+                case 57: return { text: "Dense Freezing Drizzle", icon: svgIcons.drizzle };
+                case 61: return { text: "Slight Rain", icon: svgIcons.rain };
+                case 63: return { text: "Moderate Rain", icon: svgIcons.rain };
+                case 65: return { text: "Heavy Rain", icon: svgIcons.heavy_rain };
+                case 66: return { text: "Light Freezing Rain", icon: svgIcons.rain };
+                case 67: return { text: "Heavy Freezing Rain", icon: svgIcons.heavy_rain };
+                case 71: return { text: "Slight Snowfall", icon: svgIcons.snow };
+                case 73: return { text: "Moderate Snowfall", icon: svgIcons.snow };
+                case 75: return { text: "Heavy Snowfall", icon: svgIcons.snow };
+                case 77: return { text: "Snow Grains", icon: svgIcons.snow };
+                case 80: return { text: "Slight Showers", icon: svgIcons.rain };
+                case 81: return { text: "Moderate Showers", icon: svgIcons.rain };
+                case 82: return { text: "Violent Showers", icon: svgIcons.heavy_rain };
+                case 85: return { text: "Slight Snow Showers", icon: svgIcons.snow };
+                case 86: return { text: "Heavy Snow Showers", icon: svgIcons.snow };
+                case 95: return { text: "Thunderstorm", icon: svgIcons.storm };
+                case 96: return { text: "Storm with Light Hail", icon: svgIcons.storm };
+                case 99: return { text: "Storm with Heavy Hail", icon: svgIcons.storm };
+                default: return { text: "Varied Skies", icon: svgIcons.cloudy };
+            }
         }
 
         function calculateMoonPhase(date) {

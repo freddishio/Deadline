@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monochrome Command Center</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #burn_wrapper {
+            width: 96vw;
+            max-width: 1250px;
+            will-change: transform;
+            transition: transform 4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #orbit_layer {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 24px;
+            padding: 32px;
+            background: #050505;
+            border: 1px solid #222222;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: transform 1.5s ease;
+        }
+
+        @media (max-width: 900px) {
+            #orbit_layer {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* LEFT COLUMN: TIME & SYSTEM */
+        .time_panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+            border-right: 1px solid #1a1a1a;
+            gap: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .time_panel {
+                border-right: none;
+                border-bottom: 1px solid #1a1a1a;
+            }
+        }
+
+        .seconds_ring_container {
+            position: relative;
+            width: clamp(220px, 25vw, 320px);
+            height: clamp(220px, 25vw, 320px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .seconds_svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .ring_bg {
+            fill: none;
+            stroke: #111111;
+            stroke-width: 4;
+        }
+
+        .ring_progress {
+            fill: none;
+            stroke: #FFFFFF;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        .digital_time {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 0.85;
+            z-index: 2;
+        }
+
+        .time_hr {
+            font-size: clamp(4.5rem, 9vw, 8rem);
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            color: #FFFFFF;
+        }
+
+        .time_min {
+            font-size: clamp(4.5rem, 9vw, 8rem);
+            font-weight: 300;
+            letter-spacing: -0.05em;
+            color: #777777;
+        }
+
+        .date_badge {
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #888888;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* SYSTEM TELEMETRY */
+        .sys_panel {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding-top: 24px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .sys_stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: #0a0a0a;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #151515;
+        }
+
+        .stat_label {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: #555555;
+            font-weight: 700;
+        }
+
+        .stat_val {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* RIGHT COLUMN: WEATHER & LOC */
+        .info_panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .loc_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .loc_left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .radar_icon {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .radar_icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes ping {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+        }
+
+        .loc_name {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .refresh_group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .last_sync {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: #666666;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .refresh_btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            fill: #888888;
+            transition: fill 0.2s;
+            outline: none;
+        }
+
+        .refresh_btn:hover {
+            fill: #FFFFFF;
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+            fill: #FFFFFF;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .current_weather {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 10px 0;
+        }
+
+        .weather_icon_large {
+            width: 80px;
+            height: 80px;
+            fill: #FFFFFF;
+        }
+
+        .temp_block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .temp_main {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+        }
+
+        .cond_main {
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            color: #888888;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .astro_metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 16px 0;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .metric_box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .m_label {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: #555555;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .m_val {
+            font-size: 0.9rem;
+            color: #CCCCCC;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .forecast_grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .forecast_day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #0a0a0a;
+            padding: 16px 10px;
+            border-radius: 12px;
+            border: 1px solid #151515;
+        }
+
+        .f_name {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            color: #666666;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .f_icon {
+            width: 32px;
+            height: 32px;
+            fill: #DDDDDD;
+            margin-bottom: 12px;
+        }
+
+        .f_temp {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .f_range {
+            font-size: 0.7rem;
+            color: #555555;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="burn_wrapper">
+        <div id="orbit_layer">
+            
+            <div class="time_panel">
+                <div class="seconds_ring_container">
+                    <svg class="seconds_svg" viewBox="0 0 100 100">
+                        <circle class="ring_bg" cx="50" cy="50" r="45"></circle>
+                        <circle id="sec_ring" class="ring_progress" cx="50" cy="50" r="45"></circle>
+                    </svg>
+                    <div class="digital_time">
+                        <div id="val_hr" class="time_hr">00</div>
+                        <div id="val_min" class="time_min">00</div>
+                    </div>
+                </div>
+                <div id="val_date" class="date_badge">SYNCING MODULE...</div>
+
+                <div class="sys_panel">
+                    <div class="sys_stat">
+                        <span class="stat_label">LOGICAL CORES</span>
+                        <span id="sys_cpu" class="stat_val">--</span>
+                    </div>
+                    <div class="sys_stat">
+                        <span class="stat_label">EST MEMORY</span>
+                        <span id="sys_ram" class="stat_val">-- GB</span>
+                    </div>
+                    <div class="sys_stat">
+                        <span class="stat_label">CONNECTION</span>
+                        <span id="sys_net" class="stat_val">--</span>
+                    </div>
+                    <div class="sys_stat">
+                        <span class="stat_label">PLATFORM</span>
+                        <span id="sys_os" class="stat_val">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info_panel">
+                <div class="loc_header">
+                    <div class="loc_left">
+                        <div class="radar_icon"></div>
+                        <div id="val_city" class="loc_name">AWAITING SIGNAL</div>
+                    </div>
+                    <div class="refresh_group">
+                        <span id="val_sync" class="last_sync">SYNC: PENDING</span>
+                        <button id="btn_refresh" class="refresh_btn" title="Refresh Weather Data">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="current_weather">
+                    <div id="cur_icon_box">
+                        <svg class="weather_icon_large" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                    </div>
+                    <div class="temp_block">
+                        <div id="cur_temp" class="temp_main">--°</div>
+                        <div id="cur_cond" class="cond_main">CONNECTING...</div>
+                    </div>
+                </div>
+
+                <div class="astro_metrics">
+                    <div class="metric_box">
+                        <span class="m_label">WIND</span>
+                        <span id="cur_wind" class="m_val">--</span>
+                    </div>
+                    <div class="metric_box">
+                        <span class="m_label">MAX UV</span>
+                        <span id="cur_uv" class="m_val">--</span>
+                    </div>
+                    <div class="metric_box">
+                        <span class="m_label">SUNRISE</span>
+                        <span id="cur_rise" class="m_val">--:--</span>
+                    </div>
+                    <div class="metric_box">
+                        <span class="m_label">SUNSET</span>
+                        <span id="cur_set" class="m_val">--:--</span>
+                    </div>
+                </div>
+
+                <div class="forecast_grid">
+                    <div class="forecast_day">
+                        <div class="f_name">TMRW</div>
+                        <div id="f1_icon" class="f_icon"></div>
+                        <div id="f1_temp" class="f_temp">--°</div>
+                        <div id="f1_range" class="f_range">L:-- H:--</div>
+                    </div>
+                    <div class="forecast_day">
+                        <div id="f2_name" class="f_name">DAY 2</div>
+                        <div id="f2_icon" class="f_icon"></div>
+                        <div id="f2_temp" class="f_temp">--°</div>
+                        <div id="f2_range" class="f_range">L:-- H:--</div>
+                    </div>
+                    <div class="forecast_day">
+                        <div id="f3_name" class="f_name">DAY 3</div>
+                        <div id="f3_icon" class="f_icon"></div>
+                        <div id="f3_temp" class="f_temp">--°</div>
+                        <div id="f3_range" class="f_range">L:-- H:--</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+
+        const wrapper = document.getElementById("burn_wrapper");
+        const orbitLayer = document.getElementById("orbit_layer");
+        const hrElem = document.getElementById("val_hr");
+        const minElem = document.getElementById("val_min");
+        const dateElem = document.getElementById("val_date");
+        const secRing = document.getElementById("sec_ring");
+        const cityElem = document.getElementById("val_city");
+        const syncElem = document.getElementById("val_sync");
+        const refreshBtn = document.getElementById("btn_refresh");
+
+        let lastMinute = -1;
+        let userCoords = null;
+        let isFetching = false;
+        const ringCircumference = 2 * Math.PI * 45; 
+
+        const icons = {
+            clear: `<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
+            cloudy: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>`,
+            rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/><path d="M11 20h2v4h-2zm-4 0h2v4H7zm8 0h2v4h-2z"/></svg>`,
+            snow: `<svg viewBox="0 0 24 24"><path d="M22 14c0-2.64-2.05-4.78-4.65-4.96C16.67 5.59 13.64 3 10 3 7.11 3 4.6 4.64 3.35 7.04 1.34 7.36 0 9.91 0 13c0 3.31 2.69 6 6 6h2.53l-1.63-1.63c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.19 3.19c.39.39.39 1.02 0 1.41l-3.19 3.19c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.63-1.63H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 6.69 9.48 5 12 5c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
+            storm: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/><path d="M11 20l-3 4h4l-2 4h6l-3-4h4l-2-4z"/></svg>`
+        };
+
+        function getWMOData(code) {
+            if (code <= 1) return { text: "Clear Sky", icon: icons.clear };
+            if (code <= 3) return { text: "Cloudy", icon: icons.cloudy };
+            if (code >= 51 && code <= 67) return { text: "Rain", icon: icons.rain };
+            if (code >= 71 && code <= 86) return { text: "Snow", icon: icons.snow };
+            if (code >= 95) return { text: "Storm", icon: icons.storm };
+            return { text: "Varied", icon: icons.cloudy };
+        }
+
+        function triggerPixelOrbit() {
+            const ox = (Math.random() * 4 - 2).toFixed(1);
+            const oy = (Math.random() * 4 - 2).toFixed(1);
+            orbitLayer.style.transform = `translate(${ox}px, ${oy}px)`;
+        }
+        setInterval(triggerPixelOrbit, 10000);
+
+        function updatePosition() {
+            const cardHeight = wrapper.offsetHeight;
+            const viewportHeight = window.innerHeight;
+            const maxOffset = Math.max(0, 0.45 * viewportHeight - cardHeight / 2);
+            const randomOffsetY = (Math.random() * 2 - 1) * maxOffset;
+            const randomOffsetX = (Math.random() * 2 - 1) * 20;
+            wrapper.style.transform = `translate(${randomOffsetX.toFixed(1)}px, ${randomOffsetY.toFixed(1)}px)`;
+        }
+
+        function loadSystemStats() {
+            document.getElementById("sys_cpu").textContent = navigator.hardwareConcurrency ? navigator.hardwareConcurrency : "N/A";
+            document.getElementById("sys_ram").textContent = navigator.deviceMemory ? navigator.deviceMemory + " GB" : "N/A";
+            
+            if (navigator.connection) {
+                document.getElementById("sys_net").textContent = navigator.connection.effectiveType ? navigator.connection.effectiveType.toUpperCase() : "ACTIVE";
+            } else {
+                document.getElementById("sys_net").textContent = navigator.onLine ? "ONLINE" : "OFFLINE";
+            }
+            
+            const platformStr = navigator.platform || "UNKNOWN";
+            document.getElementById("sys_os").textContent = platformStr.substring(0, 8).toUpperCase();
+        }
+
+        async function fetchExactCity(lat, lon) {
+            try {
+                const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                const data = await res.json();
+                cityElem.textContent = data.city || data.locality || data.principalSubdivision || "LOCAL AREA";
+            } catch (err) {
+                cityElem.textContent = "LOCATION OFFLINE";
+            }
+        }
+
+        async function fetchWeather(lat, lon) {
+            if (isFetching) return;
+            isFetching = true;
+            refreshBtn.classList.add("spinning");
+
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=4`;
+                const res = await fetch(url);
+                const data = await res.json();
+
+                const curData = getWMOData(data.current.weather_code);
+                document.getElementById("cur_icon_box").innerHTML = curData.icon.replace('<svg', '<svg class="weather_icon_large"');
+                document.getElementById("cur_temp").textContent = `${Math.round(data.current.temperature_2m)}°`;
+                document.getElementById("cur_cond").textContent = curData.text;
+                
+                document.getElementById("cur_wind").textContent = `${Math.round(data.current.wind_speed_10m)} MPH`;
+                document.getElementById("cur_uv").textContent = data.daily.uv_index_max[0] ? data.daily.uv_index_max[0].toFixed(1) : "--";
+
+                const formatTime = (isoString) => {
+                    if (!isoString) return "--:--";
+                    const d = new Date(isoString);
+                    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toUpperCase();
+                };
+                document.getElementById("cur_rise").textContent = formatTime(data.daily.sunrise[0]);
+                document.getElementById("cur_set").textContent = formatTime(data.daily.sunset[0]);
+
+                const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+                for (let i = 1; i <= 3; i++) {
+                    const dateObj = new Date(data.daily.time[i] + "T00:00:00");
+                    const wData = getWMOData(data.daily.weather_code[i]);
+                    const maxT = Math.round(data.daily.temperature_2m_max[i]);
+                    const minT = Math.round(data.daily.temperature_2m_min[i]);
+
+                    if (i > 1) document.getElementById(`f${i}_name`).textContent = days[dateObj.getDay()];
+                    document.getElementById(`f${i}_icon`).innerHTML = wData.icon;
+                    document.getElementById(`f${i}_temp`).textContent = `${maxT}°`;
+                    document.getElementById(`f${i}_range`).textContent = `L:${minT} H:${maxT}`;
+                }
+
+                const now = new Date();
+                syncElem.textContent = `SYNC: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            } catch (e) {
+                document.getElementById("cur_cond").textContent = "DATA OFFLINE";
+            } finally {
+                setTimeout(() => {
+                    refreshBtn.classList.remove("spinning");
+                    isFetching = false;
+                }, 500); 
+            }
+        }
+
+        function triggerManualRefresh() {
+            if (userCoords) {
+                fetchWeather(userCoords.lat, userCoords.lon);
+            } else {
+                initLocation();
+            }
+        }
+        refreshBtn.addEventListener("click", triggerManualRefresh);
+
+        function initLocation() {
+            refreshBtn.classList.add("spinning");
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+                        fetchExactCity(userCoords.lat, userCoords.lon);
+                        fetchWeather(userCoords.lat, userCoords.lon);
+                    },
+                    () => {
+                        cityElem.textContent = "GPS DISABLED";
+                        userCoords = { lat: 34.6834, lon: -82.8374 }; 
+                        fetchWeather(userCoords.lat, userCoords.lon);
+                    },
+                    { timeout: 10000 }
+                );
+            }
+        }
+
+        function updateClockLoop() {
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const milliseconds = now.getMilliseconds();
+
+            if (minutes !== lastMinute) {
+                lastMinute = minutes;
+                updatePosition();
+                
+                if (minutes % 30 === 0 && userCoords) {
+                    fetchWeather(userCoords.lat, userCoords.lon);
+                }
+            }
+
+            hrElem.textContent = String(now.getHours()).padStart(2, "0");
+            minElem.textContent = String(now.getMinutes()).padStart(2, "0");
+
+            const exactSeconds = seconds + (milliseconds / 1000);
+            const offset = ringCircumference - ((exactSeconds / 60) * ringCircumference);
+            secRing.style.strokeDashoffset = offset;
+
+            const options = { weekday: "long", month: "short", day: "numeric" };
+            dateElem.textContent = now.toLocaleDateString("en-US", options).toUpperCase();
+
+            requestAnimationFrame(updateClockLoop);
+        }
+
+        window.addEventListener("resize", updatePosition);
+
+        loadSystemStats();
+        initLocation();
+        updatePosition();
+        updateClockLoop();
+    </script>
+</body>
+</html>

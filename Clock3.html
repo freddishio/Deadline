@@ -24,7 +24,6 @@
             align-items: center;
         }
 
-        /* Anti Burn Layers */
         #burn_wrapper {
             width: 92vw;
             max-width: 1400px;
@@ -47,7 +46,6 @@
             }
         }
 
-        /* Typography & Structure */
         .section_title {
             font-size: 0.65rem;
             letter-spacing: 0.25em;
@@ -59,7 +57,6 @@
             font-weight: 700;
         }
 
-        /* LEFT: Time & Global */
         .time_module {
             display: flex;
             flex-direction: column;
@@ -129,7 +126,6 @@
             width: 0%;
         }
 
-        /* RIGHT: Weather Grid */
         .weather_module {
             display: flex;
             flex-direction: column;
@@ -168,6 +164,26 @@
             text-transform: uppercase;
         }
 
+        .unit_btn {
+            background: transparent;
+            border: 1px solid #444444;
+            color: #AAAAAA;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+
+        .unit_btn:hover {
+            color: #FFFFFF;
+            border-color: #FFFFFF;
+        }
+
         .refresh_btn {
             background: none;
             border: none;
@@ -192,12 +208,18 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Current Weather Showcase */
         .current_weather {
             display: flex;
             align-items: flex-end;
-            gap: 24px;
             margin-bottom: 32px;
+        }
+
+        .cur_icon_large {
+            width: 85px;
+            height: 85px;
+            fill: #FFFFFF;
+            margin-right: 24px;
+            margin-bottom: -4px;
         }
 
         .current_temp {
@@ -205,6 +227,7 @@
             font-weight: 300;
             line-height: 0.85;
             letter-spacing: -0.04em;
+            margin-right: 24px;
         }
 
         .current_details {
@@ -229,7 +252,6 @@
             gap: 12px;
         }
 
-        /* Hourly Row */
         .hourly_row {
             display: flex;
             justify-content: space-between;
@@ -243,7 +265,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .hour_time {
@@ -253,12 +275,17 @@
             font-weight: 700;
         }
 
+        .hour_icon {
+            width: 24px;
+            height: 24px;
+            fill: #AAAAAA;
+        }
+
         .hour_temp {
             font-size: 1.1rem;
             font-weight: 400;
         }
 
-        /* Forecast Row */
         .forecast_row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -276,6 +303,13 @@
             letter-spacing: 0.15em;
             color: #FFFFFF;
             font-weight: 700;
+        }
+        
+        .fc_icon {
+            width: 32px;
+            height: 32px;
+            fill: #FFFFFF;
+            margin-bottom: 4px;
         }
 
         .fc_temp_group {
@@ -301,6 +335,9 @@
             font-weight: 600;
         }
 
+        svg {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -342,20 +379,20 @@
                     <div class="section_title">Global Hubs</div>
                     <div class="analytics_grid">
                         <div class="data_block">
-                            <span class="data_label">Tokyo</span>
-                            <span id="clk_tyo" class="data_value">--:--</span>
+                            <span class="data_label">Beijing</span>
+                            <span id="clk_bjs" class="data_value">--:--</span>
                         </div>
                         <div class="data_block">
-                            <span class="data_label">London</span>
-                            <span id="clk_lon" class="data_value">--:--</span>
+                            <span class="data_label">Tehran</span>
+                            <span id="clk_thr" class="data_value">--:--</span>
                         </div>
                         <div class="data_block">
-                            <span class="data_label">New York</span>
-                            <span id="clk_nyc" class="data_value">--:--</span>
+                            <span class="data_label">Hamburg</span>
+                            <span id="clk_ham" class="data_value">--:--</span>
                         </div>
                         <div class="data_block">
-                            <span class="data_label">Sydney</span>
-                            <span id="clk_syd" class="data_value">--:--</span>
+                            <span class="data_label">Los Angeles</span>
+                            <span id="clk_lax" class="data_value">--:--</span>
                         </div>
                     </div>
                 </div>
@@ -369,6 +406,7 @@
                     </div>
                     <div class="sync_group">
                         <span id="val_sync" class="sync_text">AWAITING SYNC</span>
+                        <button id="btn_unit" class="unit_btn">°F</button>
                         <button id="btn_refresh" class="refresh_btn" title="Update Data">
                             <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
                         </button>
@@ -376,6 +414,7 @@
                 </div>
 
                 <div class="current_weather">
+                    <div id="cur_icon" class="cur_icon_large"></div>
                     <div id="cur_temp" class="current_temp">--°</div>
                     <div class="current_details">
                         <div id="cur_cond" class="cond_text">CONNECTING</div>
@@ -386,17 +425,38 @@
 
                 <div class="section_title">5 Hour Projection</div>
                 <div class="hourly_row">
-                    <div class="hour_item"><span id="h1_time" class="hour_time">--</span><span id="h1_temp" class="hour_temp">--°</span></div>
-                    <div class="hour_item"><span id="h2_time" class="hour_time">--</span><span id="h2_temp" class="hour_temp">--°</span></div>
-                    <div class="hour_item"><span id="h3_time" class="hour_time">--</span><span id="h3_temp" class="hour_temp">--°</span></div>
-                    <div class="hour_item"><span id="h4_time" class="hour_time">--</span><span id="h4_temp" class="hour_temp">--°</span></div>
-                    <div class="hour_item"><span id="h5_time" class="hour_time">--</span><span id="h5_temp" class="hour_temp">--°</span></div>
+                    <div class="hour_item">
+                        <span id="h1_time" class="hour_time">--</span>
+                        <div id="h1_icon" class="hour_icon"></div>
+                        <span id="h1_temp" class="hour_temp">--°</span>
+                    </div>
+                    <div class="hour_item">
+                        <span id="h2_time" class="hour_time">--</span>
+                        <div id="h2_icon" class="hour_icon"></div>
+                        <span id="h2_temp" class="hour_temp">--°</span>
+                    </div>
+                    <div class="hour_item">
+                        <span id="h3_time" class="hour_time">--</span>
+                        <div id="h3_icon" class="hour_icon"></div>
+                        <span id="h3_temp" class="hour_temp">--°</span>
+                    </div>
+                    <div class="hour_item">
+                        <span id="h4_time" class="hour_time">--</span>
+                        <div id="h4_icon" class="hour_icon"></div>
+                        <span id="h4_temp" class="hour_temp">--°</span>
+                    </div>
+                    <div class="hour_item">
+                        <span id="h5_time" class="hour_time">--</span>
+                        <div id="h5_icon" class="hour_icon"></div>
+                        <span id="h5_temp" class="hour_temp">--°</span>
+                    </div>
                 </div>
 
                 <div class="section_title">Extended Forecast</div>
                 <div class="forecast_row">
                     <div class="forecast_item">
                         <span class="fc_day">TOMORROW</span>
+                        <div id="f1_icon" class="fc_icon"></div>
                         <div class="fc_temp_group">
                             <span id="f1_high" class="fc_high">--°</span>
                             <span id="f1_low" class="fc_low">--°</span>
@@ -405,6 +465,7 @@
                     </div>
                     <div class="forecast_item">
                         <span id="f2_name" class="fc_day">DAY 2</span>
+                        <div id="f2_icon" class="fc_icon"></div>
                         <div class="fc_temp_group">
                             <span id="f2_high" class="fc_high">--°</span>
                             <span id="f2_low" class="fc_low">--°</span>
@@ -413,6 +474,7 @@
                     </div>
                     <div class="forecast_item">
                         <span id="f3_name" class="fc_day">DAY 3</span>
+                        <div id="f3_icon" class="fc_icon"></div>
                         <div class="fc_temp_group">
                             <span id="f3_high" class="fc_high">--°</span>
                             <span id="f3_low" class="fc_low">--°</span>
@@ -435,19 +497,29 @@
         const cityElem = document.getElementById("val_city");
         const syncElem = document.getElementById("val_sync");
         const refreshBtn = document.getElementById("btn_refresh");
+        const unitBtn = document.getElementById("btn_unit");
 
         let lastMinute = -1;
         let userCoords = null;
         let isFetching = false;
+        let currentUnit = "fahrenheit";
+
+        const svgIcons = {
+            clear: `<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
+            cloudy: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/></svg>`,
+            rain: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/><path d="M11 20h2v4h-2zm-4 0h2v4H7zm8 0h2v4h-2z"/></svg>`,
+            snow: `<svg viewBox="0 0 24 24"><path d="M22 14c0-2.64-2.05-4.78-4.65-4.96C16.67 5.59 13.64 3 10 3 7.11 3 4.6 4.64 3.35 7.04 1.34 7.36 0 9.91 0 13c0 3.31 2.69 6 6 6h2.53l-1.63-1.63c-.39-.39-.39-1.02 0-1.41.39-.39 1.02-.39 1.41 0l3.19 3.19c.39.39.39 1.02 0 1.41l-3.19 3.19c-.39.39-1.02.39-1.41 0-.39-.39-.39-1.02 0-1.41l1.63-1.63H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 6.69 9.48 5 12 5c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3h2zM19.14 17.86l1.27-1.27c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.27 1.27c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0zM15 16h2v2h-2zm0-4h2v2h-2z"/></svg>`,
+            storm: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3z"/><path d="M11 20l-3 4h4l-2 4h6l-3-4h4l-2-4z"/></svg>`
+        };
 
         function getWMOData(code) {
-            if (code <= 1) return "Clear Skies";
-            if (code <= 3) return "Cloudy";
-            if (code >= 45 && code <= 48) return "Fog";
-            if (code >= 51 && code <= 67) return "Rain";
-            if (code >= 71 && code <= 86) return "Snow";
-            if (code >= 95) return "Thunderstorms";
-            return "Varied";
+            if (code <= 1) return { text: "Clear Skies", icon: svgIcons.clear };
+            if (code <= 3) return { text: "Cloudy", icon: svgIcons.cloudy };
+            if (code >= 45 && code <= 48) return { text: "Fog", icon: svgIcons.cloudy };
+            if (code >= 51 && code <= 67) return { text: "Rain", icon: svgIcons.rain };
+            if (code >= 71 && code <= 86) return { text: "Snow", icon: svgIcons.snow };
+            if (code >= 95) return { text: "Storms", icon: svgIcons.storm };
+            return { text: "Varied", icon: svgIcons.cloudy };
         }
 
         function calculateMoonPhase(date) {
@@ -498,12 +570,14 @@
             refreshBtn.classList.add("spinning");
 
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&timezone=auto&forecast_days=4`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=${currentUnit}&timezone=auto&forecast_days=4`;
                 const res = await fetch(url);
                 const data = await res.json();
 
+                const currentData = getWMOData(data.current.weather_code);
+                document.getElementById("cur_icon").innerHTML = currentData.icon;
                 document.getElementById("cur_temp").textContent = `${Math.round(data.current.temperature_2m)}°`;
-                document.getElementById("cur_cond").textContent = getWMOData(data.current.weather_code);
+                document.getElementById("cur_cond").textContent = currentData.text;
                 
                 const todayMax = Math.round(data.daily.temperature_2m_max[0]);
                 const todayMin = Math.round(data.daily.temperature_2m_min[0]);
@@ -521,7 +595,11 @@
                     const hTime = new Date(data.hourly.time[idx]);
                     let hLabel = hTime.getHours() % 12 || 12;
                     let ampm = hTime.getHours() >= 12 ? "PM" : "AM";
+                    
+                    const hData = getWMOData(data.hourly.weather_code[idx]);
+                    
                     document.getElementById(`h${i+1}_time`).textContent = `${hLabel}${ampm}`;
+                    document.getElementById(`h${i+1}_icon`).innerHTML = hData.icon;
                     document.getElementById(`h${i+1}_temp`).textContent = `${Math.round(data.hourly.temperature_2m[idx])}°`;
                 }
                 
@@ -531,8 +609,10 @@
                     const maxT = Math.round(data.daily.temperature_2m_max[i]);
                     const minT = Math.round(data.daily.temperature_2m_min[i]);
                     const precip = data.daily.precipitation_probability_max[i];
+                    const dData = getWMOData(data.daily.weather_code[i]);
 
                     if (i > 1) document.getElementById(`f${i}_name`).textContent = days[dateObj.getDay()];
+                    document.getElementById(`f${i}_icon`).innerHTML = dData.icon;
                     document.getElementById(`f${i}_high`).textContent = `${maxT}°`;
                     document.getElementById(`f${i}_low`).textContent = `${minT}°`;
                     document.getElementById(`f${i}_precip`).textContent = `RAIN: ${precip}%`;
@@ -549,6 +629,12 @@
                 }, 500); 
             }
         }
+
+        unitBtn.addEventListener("click", () => {
+            currentUnit = currentUnit === "fahrenheit" ? "celsius" : "fahrenheit";
+            unitBtn.textContent = currentUnit === "fahrenheit" ? "°F" : "°C";
+            if (userCoords) fetchWeather(userCoords.lat, userCoords.lon);
+        });
 
         function triggerManualRefresh() {
             if (userCoords) {
@@ -617,10 +703,10 @@
             document.getElementById("val_moon").textContent = calculateMoonPhase(now);
 
             const timeOpts = { hour: '2-digit', minute:'2-digit', hour12: false };
-            document.getElementById("clk_tyo").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "Asia/Tokyo" });
-            document.getElementById("clk_lon").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "Europe/London" });
-            document.getElementById("clk_nyc").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "America/New_York" });
-            document.getElementById("clk_syd").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "Australia/Sydney" });
+            document.getElementById("clk_bjs").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "Asia/Shanghai" });
+            document.getElementById("clk_thr").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "Asia/Tehran" });
+            document.getElementById("clk_ham").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "Europe/Berlin" });
+            document.getElementById("clk_lax").textContent = new Date().toLocaleTimeString("en-US", { ...timeOpts, timeZone: "America/Los_Angeles" });
 
             requestAnimationFrame(updateClockLoop);
         }

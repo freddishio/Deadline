@@ -53,7 +53,7 @@
             color: #555555;
             border-bottom: 1px solid #222222;
             padding-bottom: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             font-weight: 700;
         }
 
@@ -253,7 +253,6 @@
             gap: 12px;
         }
 
-        /* Color-coded active weather alert */
         .weather_alert {
             display: none; 
             align-items: center;
@@ -271,9 +270,9 @@
 
         .hourly_row {
             display: flex;
-            justify-content: space-between;
-            padding: 24px 0;
-            border-top: 1px solid #222222;
+            justify-content: center;
+            gap: clamp(10px, 2.5vw, 25px);
+            padding: 16px 0;
             border-bottom: 1px solid #222222;
             margin-bottom: 24px;
             width: 100%;
@@ -299,15 +298,28 @@
             fill: #AAAAAA;
         }
 
+        .hour_cond {
+            font-size: 0.5rem;
+            color: #777777;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            max-width: 45px;
+            line-height: 1.2;
+            font-weight: 600;
+            height: 12px;
+        }
+
         .hour_temp {
             font-size: 1rem;
             font-weight: 400;
+            margin-top: 4px;
         }
 
         .forecast_row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
         }
 
         .forecast_item {
@@ -324,10 +336,20 @@
         }
         
         .fc_icon {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             fill: #FFFFFF;
             margin-bottom: 4px;
+        }
+
+        .fc_cond {
+            font-size: 0.55rem;
+            color: #999999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            margin-bottom: 2px;
+            line-height: 1.2;
         }
 
         .fc_temp_group {
@@ -450,8 +472,9 @@
                 <div class="section_title">Extended Forecast</div>
                 <div class="forecast_row">
                     <div class="forecast_item">
-                        <span class="fc_day">TOMORROW</span>
+                        <span id="f1_name" class="fc_day">DAY 1</span>
                         <div id="f1_icon" class="fc_icon"></div>
+                        <span id="f1_cond" class="fc_cond">COND</span>
                         <div class="fc_temp_group">
                             <span id="f1_high" class="fc_high">0°</span>
                             <span id="f1_low" class="fc_low">0°</span>
@@ -461,6 +484,7 @@
                     <div class="forecast_item">
                         <span id="f2_name" class="fc_day">DAY 2</span>
                         <div id="f2_icon" class="fc_icon"></div>
+                        <span id="f2_cond" class="fc_cond">COND</span>
                         <div class="fc_temp_group">
                             <span id="f2_high" class="fc_high">0°</span>
                             <span id="f2_low" class="fc_low">0°</span>
@@ -470,11 +494,22 @@
                     <div class="forecast_item">
                         <span id="f3_name" class="fc_day">DAY 3</span>
                         <div id="f3_icon" class="fc_icon"></div>
+                        <span id="f3_cond" class="fc_cond">COND</span>
                         <div class="fc_temp_group">
                             <span id="f3_high" class="fc_high">0°</span>
                             <span id="f3_low" class="fc_low">0°</span>
                         </div>
                         <span id="f3_precip" class="fc_precip">RAIN: 0%</span>
+                    </div>
+                    <div class="forecast_item">
+                        <span id="f4_name" class="fc_day">DAY 4</span>
+                        <div id="f4_icon" class="fc_icon"></div>
+                        <span id="f4_cond" class="fc_cond">COND</span>
+                        <div class="fc_temp_group">
+                            <span id="f4_high" class="fc_high">0°</span>
+                            <span id="f4_low" class="fc_low">0°</span>
+                        </div>
+                        <span id="f4_precip" class="fc_precip">RAIN: 0%</span>
                     </div>
                 </div>
             </div>
@@ -510,7 +545,7 @@
         };
 
         function getWMOData(code) {
-            if (code <= 1) return { text: "Clear Skies", icon: svgIcons.clear };
+            if (code <= 1) return { text: "Clear", icon: svgIcons.clear };
             if (code <= 3) return { text: "Cloudy", icon: svgIcons.cloudy };
             if (code >= 45 && code <= 48) return { text: "Fog", icon: svgIcons.cloudy };
             if (code >= 51 && code <= 67) return { text: "Rain", icon: svgIcons.rain };
@@ -596,7 +631,7 @@
             refreshBtn.classList.add("spinning");
 
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=${currentUnit}&timezone=auto&forecast_days=4`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=${currentUnit}&timezone=auto&forecast_days=5`;
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -630,21 +665,23 @@
                         <div class="hour_item">
                             <span class="hour_time">${hLabel}${ampm}</span>
                             <div class="hour_icon">${hData.icon}</div>
+                            <span class="hour_cond">${hData.text}</span>
                             <span class="hour_temp">${hTemp}°</span>
                         </div>
                     `;
                 }
                 
                 const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-                for (let i = 1; i <= 3; i++) {
+                for (let i = 1; i <= 4; i++) {
                     const dateObj = new Date(data.daily.time[i] + "T00:00:00");
                     const maxT = Math.round(data.daily.temperature_2m_max[i]);
                     const minT = Math.round(data.daily.temperature_2m_min[i]);
                     const precip = data.daily.precipitation_probability_max[i];
                     const dData = getWMOData(data.daily.weather_code[i]);
 
-                    if (i > 1) document.getElementById(`f${i}_name`).textContent = days[dateObj.getDay()];
+                    document.getElementById(`f${i}_name`).textContent = days[dateObj.getDay()];
                     document.getElementById(`f${i}_icon`).innerHTML = dData.icon;
+                    document.getElementById(`f${i}_cond`).textContent = dData.text;
                     document.getElementById(`f${i}_high`).textContent = `${maxT}°`;
                     document.getElementById(`f${i}_low`).textContent = `${minT}°`;
                     document.getElementById(`f${i}_precip`).textContent = `RAIN: ${precip}%`;

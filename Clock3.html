@@ -130,11 +130,34 @@
             background: #050505;
         }
 
+        .weekday_tracker {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        .wk_day {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            color: #444444;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .wk_day.active {
+            color: #000000;
+            background: #FFFFFF;
+        }
+
         .clock_date {
             font-size: clamp(0.9rem, 1.8vw, 1.2rem);
             letter-spacing: 0.1em;
             color: #888888;
-            margin-top: 24px;
+            margin-top: 4px;
             font-weight: 300;
             text-transform: uppercase;
         }
@@ -502,6 +525,17 @@
                         <div id="val_time" class="clock_time">00:00</div>
                         <div id="val_sec" class="clock_sec">00</div>
                     </div>
+                    
+                    <div class="weekday_tracker">
+                        <span id="wk_0" class="wk_day">SUN</span>
+                        <span id="wk_1" class="wk_day">MON</span>
+                        <span id="wk_2" class="wk_day">TUE</span>
+                        <span id="wk_3" class="wk_day">WED</span>
+                        <span id="wk_4" class="wk_day">THU</span>
+                        <span id="wk_5" class="wk_day">FRI</span>
+                        <span id="wk_6" class="wk_day">SAT</span>
+                    </div>
+
                     <div id="val_date" class="clock_date">INITIALIZING...</div>
                     <div id="val_persian_date" class="clock_date_persian"></div>
                 </div>
@@ -1015,10 +1049,20 @@
             timeElem.textContent = `${hrs}:${mins}`;
             secElem.textContent = secs;
 
-            const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+            const currentDay = now.getDay();
+            for (let i = 0; i < 7; i++) {
+                const dElem = document.getElementById(`wk_${i}`);
+                if (i === currentDay) {
+                    dElem.classList.add("active");
+                } else {
+                    dElem.classList.remove("active");
+                }
+            }
+
+            const options = { year: "numeric", month: "long", day: "numeric" };
             dateElem.textContent = now.toLocaleDateString("en-US", options);
             
-            const persianOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+            const persianOptions = { year: "numeric", month: "long", day: "numeric" };
             persianDateElem.textContent = new Intl.DateTimeFormat('en-US-u-ca-persian', persianOptions).format(now);
 
             const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();

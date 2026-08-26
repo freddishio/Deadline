@@ -25,21 +25,21 @@
         }
 
         #burn_wrapper {
-            width: 92vw;
-            max-width: 1400px;
+            width: 95vw;
+            max-width: 1500px;
             will-change: transform;
             transition: transform 4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         #orbit_layer {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: 1fr 1.5fr;
             gap: 60px;
             padding: 40px;
             transition: transform 1.5s ease;
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1100px) {
             #orbit_layer {
                 grid-template-columns: 1fr;
                 gap: 40px;
@@ -70,14 +70,14 @@
         }
 
         .clock_time {
-            font-size: clamp(6rem, 12vw, 12rem);
+            font-size: clamp(5rem, 10vw, 11rem);
             font-weight: 700;
             letter-spacing: -0.04em;
             color: #FFFFFF;
         }
 
         .clock_date {
-            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-size: clamp(0.9rem, 1.8vw, 1.3rem);
             letter-spacing: 0.1em;
             color: #888888;
             margin-top: 20px;
@@ -215,11 +215,11 @@
         }
 
         .cur_icon_large {
-            width: 85px;
-            height: 85px;
+            width: 90px;
+            height: 90px;
             fill: #FFFFFF;
             margin-right: 24px;
-            margin-bottom: -4px;
+            margin-bottom: -6px;
         }
 
         .current_temp {
@@ -235,6 +235,7 @@
             flex-direction: column;
             gap: 6px;
             padding-bottom: 6px;
+            align-items: flex-start;
         }
 
         .cond_text {
@@ -252,6 +253,22 @@
             gap: 12px;
         }
 
+        /* Color-coded active weather alert */
+        .weather_alert {
+            display: none; 
+            align-items: center;
+            gap: 8px;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-top: 10px;
+            padding: 6px 12px;
+            border: 1px solid currentColor;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
         .hourly_row {
             display: flex;
             justify-content: space-between;
@@ -259,6 +276,7 @@
             border-top: 1px solid #222222;
             border-bottom: 1px solid #222222;
             margin-bottom: 24px;
+            width: 100%;
         }
 
         .hour_item {
@@ -271,18 +289,18 @@
         .hour_time {
             font-size: 0.65rem;
             color: #777777;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.1em;
             font-weight: 700;
         }
 
         .hour_icon {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             fill: #AAAAAA;
         }
 
         .hour_temp {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 400;
         }
 
@@ -356,21 +374,21 @@
                     <div class="analytics_grid">
                         <div class="data_block">
                             <span class="data_label">Day Progress</span>
-                            <span id="val_day_pct" class="data_value">--%</span>
+                            <span id="val_day_pct" class="data_value">0%</span>
                             <div class="progress_track"><div id="bar_day" class="progress_fill"></div></div>
                         </div>
                         <div class="data_block">
                             <span class="data_label">Year Progress</span>
-                            <span id="val_year_pct" class="data_value">--%</span>
+                            <span id="val_year_pct" class="data_value">0%</span>
                             <div class="progress_track"><div id="bar_year" class="progress_fill"></div></div>
                         </div>
                         <div class="data_block">
                             <span class="data_label">Lunar Phase</span>
-                            <span id="val_moon" class="data_value">--</span>
+                            <span id="val_moon" class="data_value">SYNCING</span>
                         </div>
                         <div class="data_block">
                             <span class="data_label">Day Of Year</span>
-                            <span id="val_doy" class="data_value">--</span>
+                            <span id="val_doy" class="data_value">0</span>
                         </div>
                     </div>
                 </div>
@@ -380,19 +398,19 @@
                     <div class="analytics_grid">
                         <div class="data_block">
                             <span class="data_label">Beijing</span>
-                            <span id="clk_bjs" class="data_value">--:--</span>
+                            <span id="clk_bjs" class="data_value">00:00</span>
                         </div>
                         <div class="data_block">
                             <span class="data_label">Tehran</span>
-                            <span id="clk_thr" class="data_value">--:--</span>
+                            <span id="clk_thr" class="data_value">00:00</span>
                         </div>
                         <div class="data_block">
                             <span class="data_label">Hamburg</span>
-                            <span id="clk_ham" class="data_value">--:--</span>
+                            <span id="clk_ham" class="data_value">00:00</span>
                         </div>
                         <div class="data_block">
                             <span class="data_label">Los Angeles</span>
-                            <span id="clk_lax" class="data_value">--:--</span>
+                            <span id="clk_lax" class="data_value">00:00</span>
                         </div>
                     </div>
                 </div>
@@ -415,41 +433,18 @@
 
                 <div class="current_weather">
                     <div id="cur_icon" class="cur_icon_large"></div>
-                    <div id="cur_temp" class="current_temp">--°</div>
+                    <div id="cur_temp" class="current_temp">0°</div>
                     <div class="current_details">
                         <div id="cur_cond" class="cond_text">CONNECTING</div>
-                        <div id="cur_hl" class="cond_stats">HIGH: --° | LOW: --°</div>
-                        <div id="cur_rain" class="cond_stats">PRECIPITATION: --%</div>
+                        <div id="cur_hl" class="cond_stats">HIGH: 0° | LOW: 0°</div>
+                        <div id="cur_rain" class="cond_stats">PRECIPITATION: 0%</div>
+                        <div id="active_alert" class="weather_alert"></div>
                     </div>
                 </div>
 
-                <div class="section_title">5 Hour Projection</div>
-                <div class="hourly_row">
-                    <div class="hour_item">
-                        <span id="h1_time" class="hour_time">--</span>
-                        <div id="h1_icon" class="hour_icon"></div>
-                        <span id="h1_temp" class="hour_temp">--°</span>
-                    </div>
-                    <div class="hour_item">
-                        <span id="h2_time" class="hour_time">--</span>
-                        <div id="h2_icon" class="hour_icon"></div>
-                        <span id="h2_temp" class="hour_temp">--°</span>
-                    </div>
-                    <div class="hour_item">
-                        <span id="h3_time" class="hour_time">--</span>
-                        <div id="h3_icon" class="hour_icon"></div>
-                        <span id="h3_temp" class="hour_temp">--°</span>
-                    </div>
-                    <div class="hour_item">
-                        <span id="h4_time" class="hour_time">--</span>
-                        <div id="h4_icon" class="hour_icon"></div>
-                        <span id="h4_temp" class="hour_temp">--°</span>
-                    </div>
-                    <div class="hour_item">
-                        <span id="h5_time" class="hour_time">--</span>
-                        <div id="h5_icon" class="hour_icon"></div>
-                        <span id="h5_temp" class="hour_temp">--°</span>
-                    </div>
+                <div class="section_title">10 Hour Projection</div>
+                <div class="hourly_row" id="hourly_container">
+                    <!-- Javascript will populate the 10 hours here -->
                 </div>
 
                 <div class="section_title">Extended Forecast</div>
@@ -458,28 +453,28 @@
                         <span class="fc_day">TOMORROW</span>
                         <div id="f1_icon" class="fc_icon"></div>
                         <div class="fc_temp_group">
-                            <span id="f1_high" class="fc_high">--°</span>
-                            <span id="f1_low" class="fc_low">--°</span>
+                            <span id="f1_high" class="fc_high">0°</span>
+                            <span id="f1_low" class="fc_low">0°</span>
                         </div>
-                        <span id="f1_precip" class="fc_precip">RAIN: --%</span>
+                        <span id="f1_precip" class="fc_precip">RAIN: 0%</span>
                     </div>
                     <div class="forecast_item">
                         <span id="f2_name" class="fc_day">DAY 2</span>
                         <div id="f2_icon" class="fc_icon"></div>
                         <div class="fc_temp_group">
-                            <span id="f2_high" class="fc_high">--°</span>
-                            <span id="f2_low" class="fc_low">--°</span>
+                            <span id="f2_high" class="fc_high">0°</span>
+                            <span id="f2_low" class="fc_low">0°</span>
                         </div>
-                        <span id="f2_precip" class="fc_precip">RAIN: --%</span>
+                        <span id="f2_precip" class="fc_precip">RAIN: 0%</span>
                     </div>
                     <div class="forecast_item">
                         <span id="f3_name" class="fc_day">DAY 3</span>
                         <div id="f3_icon" class="fc_icon"></div>
                         <div class="fc_temp_group">
-                            <span id="f3_high" class="fc_high">--°</span>
-                            <span id="f3_low" class="fc_low">--°</span>
+                            <span id="f3_high" class="fc_high">0°</span>
+                            <span id="f3_low" class="fc_low">0°</span>
                         </div>
-                        <span id="f3_precip" class="fc_precip">RAIN: --%</span>
+                        <span id="f3_precip" class="fc_precip">RAIN: 0%</span>
                     </div>
                 </div>
             </div>
@@ -498,6 +493,8 @@
         const syncElem = document.getElementById("val_sync");
         const refreshBtn = document.getElementById("btn_refresh");
         const unitBtn = document.getElementById("btn_unit");
+        const alertBox = document.getElementById("active_alert");
+        const hourlyContainer = document.getElementById("hourly_container");
 
         let lastMinute = -1;
         let userCoords = null;
@@ -564,6 +561,35 @@
             }
         }
 
+        async function checkWeatherAlerts(lat, lon) {
+            try {
+                const res = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`, {
+                    headers: { 'User-Agent': 'MonochromeHUD/1.0' }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.features && data.features.length > 0) {
+                        const eventName = data.features[0].properties.event;
+                        const severity = data.features[0].properties.severity;
+                        
+                        let alertColor = "#FFCC00"; 
+                        if (severity === "Extreme") alertColor = "#FF3333";
+                        else if (severity === "Severe") alertColor = "#FF8800";
+                        else if (severity === "Moderate") alertColor = "#FFCC00";
+                        else if (severity === "Minor") alertColor = "#AAAAAA";
+
+                        alertBox.style.display = "inline-flex";
+                        alertBox.style.color = alertColor;
+                        alertBox.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> <span>${eventName}</span>`;
+                        return;
+                    }
+                }
+            } catch(e) {}
+            
+            alertBox.style.display = "none";
+        }
+
         async function fetchWeather(lat, lon) {
             if (isFetching) return;
             isFetching = true;
@@ -589,18 +615,24 @@
                 let nextHourIdx = data.hourly.time.findIndex(timeStr => new Date(timeStr).getTime() > nowMs);
                 if(nextHourIdx === -1) nextHourIdx = 0;
 
-                for (let i = 0; i < 5; i++) {
+                hourlyContainer.innerHTML = "";
+                for (let i = 0; i < 10; i++) {
                     let idx = nextHourIdx + i;
                     if (idx >= data.hourly.time.length) idx = data.hourly.time.length - 1; 
+                    
                     const hTime = new Date(data.hourly.time[idx]);
                     let hLabel = hTime.getHours() % 12 || 12;
                     let ampm = hTime.getHours() >= 12 ? "PM" : "AM";
-                    
                     const hData = getWMOData(data.hourly.weather_code[idx]);
-                    
-                    document.getElementById(`h${i+1}_time`).textContent = `${hLabel}${ampm}`;
-                    document.getElementById(`h${i+1}_icon`).innerHTML = hData.icon;
-                    document.getElementById(`h${i+1}_temp`).textContent = `${Math.round(data.hourly.temperature_2m[idx])}°`;
+                    const hTemp = Math.round(data.hourly.temperature_2m[idx]);
+
+                    hourlyContainer.innerHTML += `
+                        <div class="hour_item">
+                            <span class="hour_time">${hLabel}${ampm}</span>
+                            <div class="hour_icon">${hData.icon}</div>
+                            <span class="hour_temp">${hTemp}°</span>
+                        </div>
+                    `;
                 }
                 
                 const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
@@ -617,6 +649,8 @@
                     document.getElementById(`f${i}_low`).textContent = `${minT}°`;
                     document.getElementById(`f${i}_precip`).textContent = `RAIN: ${precip}%`;
                 }
+
+                checkWeatherAlerts(lat, lon);
 
                 const now = new Date();
                 syncElem.textContent = `SYNCED AT ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toUpperCase()}`;

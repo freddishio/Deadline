@@ -17,7 +17,7 @@
             height: 100%;
             background: #000000;
             color: #FFFFFF;
-            font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
@@ -30,12 +30,11 @@
             right: 24px;
             z-index: 9999;
             background: transparent;
-            border: 1px solid #333333;
-            border-radius: 8px;
+            border: none;
             padding: 8px;
             cursor: pointer;
             opacity: 0.3;
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -44,14 +43,13 @@
 
         .global_reload_btn:hover {
             opacity: 1;
-            border-color: #666666;
-            background: rgba(255, 255, 255, 0.05);
         }
 
         .global_reload_btn svg {
-            width: 18px;
-            height: 18px;
-            fill: #FFFFFF;
+            width: 20px;
+            height: 20px;
+            stroke: #FFFFFF;
+            transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         #burn_wrapper {
@@ -61,7 +59,7 @@
             transition: transform 4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        #orbit_layer {
+        #content_layer {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
             gap: 40px;
@@ -69,7 +67,7 @@
         }
 
         @media (max-width: 1100px) {
-            #orbit_layer {
+            #content_layer {
                 grid-template-columns: 1fr;
                 gap: 30px;
             }
@@ -480,11 +478,14 @@
 <body>
 
     <button id="global_reload" class="global_reload_btn" title="Reload Entire Page">
-        <svg viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.73 1.27l-1.38 1.35A7.24 7.24 0 1 1 12 4.75v-2zM17.5 4.5v4.5h-4.5l2.25-2.25c-1.35-1.12-3.08-1.75-5.25-1.75v-2c2.75 0 5 1 6.75 2.5L17.5 4.5z"/></svg>
+        <svg id="global_reload_svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
     </button>
 
     <div id="burn_wrapper">
-        <div id="orbit_layer">
+        <div id="content_layer">
             
             <div class="time_module">
                 <div class="main_clock">
@@ -648,6 +649,7 @@
         "use strict";
 
         const globalReloadBtn = document.getElementById("global_reload");
+        const globalReloadSvg = document.getElementById("global_reload_svg");
         const wrapper = document.getElementById("burn_wrapper");
         const timeElem = document.getElementById("val_time");
         const secElem = document.getElementById("val_sec");
@@ -665,6 +667,7 @@
         let userCoords = null;
         let isFetching = false;
         let currentUnit = "fahrenheit";
+        let reloadRotation = 0;
         
         let dailySunriseDate = null;
         let dailySunsetDate = null;
@@ -929,6 +932,9 @@
             if (seconds === 0 && minutes !== lastMinute) {
                 lastMinute = minutes;
                 updatePosition();
+                
+                reloadRotation += 20;
+                globalReloadSvg.style.transform = `rotate(${reloadRotation}deg)`;
                 
                 if (minutes % 30 === 0 && userCoords) {
                     fetchWeather(userCoords.lat, userCoords.lon);

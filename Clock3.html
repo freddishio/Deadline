@@ -33,7 +33,7 @@
 
         #orbit_layer {
             display: grid;
-            grid-template-columns: 1fr 1.4fr;
+            grid-template-columns: 1fr 1.5fr;
             gap: 24px;
             padding: 32px;
             background: #050505;
@@ -173,14 +173,14 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 20px;
+            gap: 16px;
         }
 
         .loc_header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: 16px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #1a1a1a;
         }
 
@@ -265,7 +265,7 @@
             display: flex;
             align-items: center;
             gap: 24px;
-            padding: 10px 0;
+            padding: 4px 0;
         }
 
         .weather_icon_large {
@@ -294,11 +294,46 @@
             margin-top: 8px;
         }
 
+        .cond_sub {
+            font-size: 0.75rem;
+            color: #CCCCCC;
+            letter-spacing: 0.1em;
+            margin-top: 6px;
+            font-weight: 700;
+        }
+
+        .hourly_timeline {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .h_block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .h_time {
+            font-size: 0.65rem;
+            color: #777777;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+        }
+
+        .h_temp {
+            font-size: 1rem;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+
         .astro_metrics {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
-            padding: 16px 0;
+            padding: 12px 0;
             border-top: 1px solid #1a1a1a;
         }
 
@@ -327,7 +362,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            padding-top: 16px;
+            padding-top: 12px;
             border-top: 1px solid #1a1a1a;
         }
 
@@ -336,7 +371,7 @@
             flex-direction: column;
             align-items: center;
             background: #0a0a0a;
-            padding: 16px 10px;
+            padding: 12px 8px;
             border-radius: 12px;
             border: 1px solid #151515;
         }
@@ -345,28 +380,36 @@
             font-size: 0.75rem;
             letter-spacing: 0.15em;
             color: #666666;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-weight: 700;
         }
 
         .f_icon {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             fill: #DDDDDD;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .f_temp {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #FFFFFF;
         }
 
         .f_range {
-            font-size: 0.7rem;
-            color: #555555;
+            font-size: 0.65rem;
+            color: #666666;
             margin-top: 4px;
             font-weight: 600;
+        }
+
+        .f_precip {
+            font-size: 0.65rem;
+            color: #999999;
+            margin-top: 4px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
         }
 
     </style>
@@ -430,7 +473,16 @@
                     <div class="temp_block">
                         <div id="cur_temp" class="temp_main">--°</div>
                         <div id="cur_cond" class="cond_main">CONNECTING...</div>
+                        <div id="cur_today_range" class="cond_sub">L:--° H:--° | PRECIP: --%</div>
                     </div>
+                </div>
+
+                <div class="hourly_timeline">
+                    <div class="h_block"><span id="h1_time" class="h_time">--</span><span id="h1_temp" class="h_temp">--°</span></div>
+                    <div class="h_block"><span id="h2_time" class="h_time">--</span><span id="h2_temp" class="h_temp">--°</span></div>
+                    <div class="h_block"><span id="h3_time" class="h_time">--</span><span id="h3_temp" class="h_temp">--°</span></div>
+                    <div class="h_block"><span id="h4_time" class="h_time">--</span><span id="h4_temp" class="h_temp">--°</span></div>
+                    <div class="h_block"><span id="h5_time" class="h_time">--</span><span id="h5_temp" class="h_temp">--°</span></div>
                 </div>
 
                 <div class="astro_metrics">
@@ -458,18 +510,21 @@
                         <div id="f1_icon" class="f_icon"></div>
                         <div id="f1_temp" class="f_temp">--°</div>
                         <div id="f1_range" class="f_range">L:-- H:--</div>
+                        <div id="f1_precip" class="f_precip">--% RAIN</div>
                     </div>
                     <div class="forecast_day">
                         <div id="f2_name" class="f_name">DAY 2</div>
                         <div id="f2_icon" class="f_icon"></div>
                         <div id="f2_temp" class="f_temp">--°</div>
                         <div id="f2_range" class="f_range">L:-- H:--</div>
+                        <div id="f2_precip" class="f_precip">--% RAIN</div>
                     </div>
                     <div class="forecast_day">
                         <div id="f3_name" class="f_name">DAY 3</div>
                         <div id="f3_icon" class="f_icon"></div>
                         <div id="f3_temp" class="f_temp">--°</div>
                         <div id="f3_range" class="f_range">L:-- H:--</div>
+                        <div id="f3_precip" class="f_precip">--% RAIN</div>
                     </div>
                 </div>
             </div>
@@ -558,7 +613,7 @@
             refreshBtn.classList.add("spinning");
 
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=4`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=4`;
                 const res = await fetch(url);
                 const data = await res.json();
 
@@ -566,6 +621,25 @@
                 document.getElementById("cur_icon_box").innerHTML = curData.icon.replace('<svg', '<svg class="weather_icon_large"');
                 document.getElementById("cur_temp").textContent = `${Math.round(data.current.temperature_2m)}°`;
                 document.getElementById("cur_cond").textContent = curData.text;
+                
+                const todayMax = Math.round(data.daily.temperature_2m_max[0]);
+                const todayMin = Math.round(data.daily.temperature_2m_min[0]);
+                const todayPrecip = data.daily.precipitation_probability_max[0];
+                document.getElementById("cur_today_range").textContent = `L:${todayMin}° H:${todayMax}° | PRECIP: ${todayPrecip}%`;
+
+                const nowMs = Date.now();
+                let nextHourIdx = data.hourly.time.findIndex(timeStr => new Date(timeStr).getTime() > nowMs);
+                if(nextHourIdx === -1) nextHourIdx = 0;
+
+                for (let i = 0; i < 5; i++) {
+                    let idx = nextHourIdx + i;
+                    if (idx >= data.hourly.time.length) idx = data.hourly.time.length - 1; 
+                    const hTime = new Date(data.hourly.time[idx]);
+                    let hLabel = hTime.getHours() % 12 || 12;
+                    let ampm = hTime.getHours() >= 12 ? "PM" : "AM";
+                    document.getElementById(`h${i+1}_time`).textContent = `${hLabel}${ampm}`;
+                    document.getElementById(`h${i+1}_temp`).textContent = `${Math.round(data.hourly.temperature_2m[idx])}°`;
+                }
                 
                 document.getElementById("cur_wind").textContent = `${Math.round(data.current.wind_speed_10m)} MPH`;
                 document.getElementById("cur_uv").textContent = data.daily.uv_index_max[0] ? data.daily.uv_index_max[0].toFixed(1) : "--";
@@ -584,11 +658,13 @@
                     const wData = getWMOData(data.daily.weather_code[i]);
                     const maxT = Math.round(data.daily.temperature_2m_max[i]);
                     const minT = Math.round(data.daily.temperature_2m_min[i]);
+                    const precip = data.daily.precipitation_probability_max[i];
 
                     if (i > 1) document.getElementById(`f${i}_name`).textContent = days[dateObj.getDay()];
                     document.getElementById(`f${i}_icon`).innerHTML = wData.icon;
                     document.getElementById(`f${i}_temp`).textContent = `${maxT}°`;
                     document.getElementById(`f${i}_range`).textContent = `L:${minT} H:${maxT}`;
+                    document.getElementById(`f${i}_precip`).textContent = `${precip}% RAIN`;
                 }
 
                 const now = new Date();

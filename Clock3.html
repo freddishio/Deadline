@@ -34,11 +34,11 @@
             padding: 8px;
             cursor: pointer;
             opacity: 0.3;
-            transition: opacity 0.2s ease;
             display: flex;
             justify-content: center;
             align-items: center;
             outline: none;
+            transition: opacity 0.2s ease;
         }
 
         .global_reload_btn:hover {
@@ -46,8 +46,8 @@
         }
 
         .global_reload_btn svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             stroke: #FFFFFF;
             transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -478,9 +478,9 @@
 <body>
 
     <button id="global_reload" class="global_reload_btn" title="Reload Entire Page">
-        <svg id="global_reload_svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="23 4 23 10 17 10"></polyline>
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        <svg id="reload_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M 19.8 16.5 A 9 9 0 1 1 12 3 c 2.52 0 4.93 1.05 6.64 2.82 L 21 8"></path>
+            <polyline points="21 3 21 8 16 8"></polyline>
         </svg>
     </button>
 
@@ -513,9 +513,16 @@
                             <span class="data_label">Lunar Phase</span>
                             <span id="val_moon" class="data_value">SYNCING</span>
                         </div>
-                        <div class="data_block">
-                            <span class="data_label">Day Of Year</span>
-                            <span id="val_doy" class="data_value">0</span>
+                        
+                        <div style="display: flex; gap: 32px;">
+                            <div class="data_block">
+                                <span class="data_label">Day</span>
+                                <span id="val_doy" class="data_value">0</span>
+                            </div>
+                            <div class="data_block">
+                                <span class="data_label">Week</span>
+                                <span id="val_week" class="data_value">0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -649,7 +656,7 @@
         "use strict";
 
         const globalReloadBtn = document.getElementById("global_reload");
-        const globalReloadSvg = document.getElementById("global_reload_svg");
+        const reloadIcon = document.getElementById("reload_icon");
         const wrapper = document.getElementById("burn_wrapper");
         const timeElem = document.getElementById("val_time");
         const secElem = document.getElementById("val_sec");
@@ -664,10 +671,10 @@
         const wavePath = document.getElementById("solar_wave_path");
 
         let lastMinute = -1;
+        let globalReloadRotation = 0;
         let userCoords = null;
         let isFetching = false;
         let currentUnit = "fahrenheit";
-        let reloadRotation = 0;
         
         let dailySunriseDate = null;
         let dailySunsetDate = null;
@@ -756,9 +763,13 @@
             try {
                 const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
                 const data = await res.json();
-                cityElem.textContent = data.city || data.locality || data.principalSubdivision || "LOCAL AREA";
+                if (data.city || data.locality || data.principalSubdivision) {
+                    cityElem.textContent = data.city || data.locality || data.principalSubdivision;
+                }
             } catch (err) {
-                cityElem.textContent = "LOCATION OFFLINE";
+                if (cityElem.textContent === "LOCATING...") {
+                    cityElem.textContent = "LOCATION OFFLINE";
+                }
             }
         }
 
@@ -877,7 +888,9 @@
                 const now = new Date();
                 syncElem.textContent = `SYNCED AT ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toUpperCase()}`;
             } catch (e) {
-                document.getElementById("cur_cond").textContent = "DATA OFFLINE";
+                if (document.getElementById("cur_temp").textContent === "0°") {
+                    document.getElementById("cur_cond").textContent = "DATA OFFLINE";
+                }
             } finally {
                 setTimeout(() => {
                     refreshBtn.classList.remove("spinning");
@@ -893,10 +906,10 @@
         });
 
         function triggerManualRefresh() {
-            if (userCoords) {
-                fetchWeather(userCoords.lat, userCoords.lon);
-            } else {
+            if (cityElem.textContent === "GPS DISABLED" || cityElem.textContent === "LOCATION OFFLINE" || !userCoords) {
                 initLocation();
+            } else {
+                fetchWeather(userCoords.lat, userCoords.lon);
             }
         }
         refreshBtn.addEventListener("click", triggerManualRefresh);
@@ -911,8 +924,12 @@
                         fetchWeather(userCoords.lat, userCoords.lon);
                     },
                     () => {
-                        cityElem.textContent = "GPS DISABLED";
-                        userCoords = { lat: 34.6834, lon: -82.8374 }; 
+                        if (cityElem.textContent === "LOCATING...") {
+                            cityElem.textContent = "GPS DISABLED";
+                        }
+                        if (!userCoords) {
+                            userCoords = { lat: 34.6834, lon: -82.8374 }; 
+                        }
                         fetchWeather(userCoords.lat, userCoords.lon);
                     },
                     { timeout: 10000 }
@@ -933,11 +950,15 @@
                 lastMinute = minutes;
                 updatePosition();
                 
-                reloadRotation += 20;
-                globalReloadSvg.style.transform = `rotate(${reloadRotation}deg)`;
+                globalReloadRotation += 20;
+                reloadIcon.style.transform = `rotate(${globalReloadRotation}deg)`;
                 
-                if (minutes % 30 === 0 && userCoords) {
+                if (userCoords) {
                     fetchWeather(userCoords.lat, userCoords.lon);
+                }
+                
+                if (minutes % 20 === 0) {
+                    initLocation();
                 }
             }
             
@@ -1000,6 +1021,10 @@
             const start = new Date(now.getFullYear(), 0, 0);
             const diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
             document.getElementById("val_doy").textContent = Math.floor(diff / 86400000);
+            
+            const pastDays = (now - start) / 86400000;
+            const usWeek = Math.ceil((pastDays + start.getDay() + 1) / 7);
+            document.getElementById("val_week").textContent = usWeek;
 
             document.getElementById("val_moon").textContent = calculateMoonPhase(now);
 
